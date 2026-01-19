@@ -117,7 +117,7 @@ const PostCard = ({
       {/* Post Content */}
       {postText && (
         <div className="mb-3">
-          <p className="text-gray-800 text-sm sm:text-base whitespace-pre-wrap break-words">
+          <p className="text-gray-800 text-sm sm:text-base whitespace-pre-wrap wrap-break-words">
             {postText}
           </p>
         </div>
