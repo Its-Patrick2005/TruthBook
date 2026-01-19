@@ -1,20 +1,17 @@
 import React, { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
 import "./index.css";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Widget from "./components/Widget";
-import StoryReel from "./components/StoryReel";
-import CreatePost from "./components/createPost";
-import PostCard from "./components/postCard";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 
 function App() {
   // User information (you can get this from authentication later)
   const userName = "UserName";
   const userImage = "https://i.pravatar.cc/150?img=68";
-
-  // State to manage posts
-  const [posts, setPosts] = useState([]);
 
   // State to manage stories - initial sample data
   const [stories, setStories] = useState([
@@ -56,68 +53,15 @@ function App() {
     }
   ]);
 
-  // Function to handle post creation
-  const handleCreatePost = (postText, postImage = null) => {
-    const newPost = {
-      id: Date.now(), // Simple ID generation (use UUID in production)
-      userName,
-      userImage,
-      postText,
-      postImage,
-      timestamp: "Just now",
-      likes: 0,
-      comments: 0,
-      shares: 0,
-    };
-    
-    // Add new post to the beginning of the array
-    setPosts((prevPosts) => [newPost, ...prevPosts]);
-  };
-
-  // Function to handle post deletion
-  const handleDeletePost = (postId) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
-  };
-
-  // Function to handle like
-  const handleLike = (postId, liked) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? { ...post, likes: liked ? post.likes + 1 : post.likes - 1 }
-          : post
-      )
-    );
-  };
-
-  // Function to handle comment
-  const handleComment = (postId) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId ? { ...post, comments: post.comments + 1 } : post
-      )
-    );
-  };
-
-  // Function to handle share
-  const handleShare = (postId) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId ? { ...post, shares: post.shares + 1 } : post
-      )
-    );
-  };
-
   // Function to handle story creation
   const handleCreateStory = (storyImage) => {
     const newStory = {
-      id: Date.now(), // Simple ID generation (use UUID in production)
+      id: Date.now(),
       name: userName,
       profileImage: userImage,
       image: storyImage,
     };
     
-    // Add new story to the beginning of the array (before other users' stories, after create story card)
     setStories((prevStories) => [newStory, ...prevStories]);
   };
 
@@ -139,41 +83,30 @@ function App() {
 
           {/* Center Feed - Takes remaining space between sidebar and widget */}
           <div className="flex-1 min-w-0 px-2 sm:px-4 md:ml-64 lg:ml-72 lg:mr-80 xl:mr-96">
-            <div className="w-full max-w-full overflow-hidden">
-              <StoryReel 
-                stories={stories}
-                userName={userName}
-                userImage={userImage}
-                onCreateStory={handleCreateStory}
-                onStoryClick={handleStoryClick}
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Home
+                    userName={userName}
+                    userImage={userImage}
+                    stories={stories}
+                    setStories={setStories}
+                    onCreateStory={handleCreateStory}
+                    onStoryClick={handleStoryClick}
+                  />
+                }
               />
-            </div>
-            
-            {/* Create Post Component */}
-            <CreatePost 
-              userName={userName}
-              userImage={userImage}
-              onSubmit={handleCreatePost}
-            />
-            
-            {/* Display Posts */}
-            {posts.map((post) => (
-              <PostCard
-                key={post.id}
-                userName={post.userName}
-                userImage={post.userImage}
-                postText={post.postText}
-                postImage={post.postImage}
-                timestamp={post.timestamp}
-                likes={post.likes}
-                comments={post.comments}
-                shares={post.shares}
-                onLike={(liked) => handleLike(post.id, liked)}
-                onComment={() => handleComment(post.id)}
-                onShare={() => handleShare(post.id)}
-                onDelete={() => handleDeletePost(post.id)}
+              <Route
+                path="/profile"
+                element={
+                  <Profile
+                    userName={userName}
+                    userImage={userImage}
+                  />
+                }
               />
-            ))}
+            </Routes>
           </div>
 
           {/* Right Widget - Fixed position */}
